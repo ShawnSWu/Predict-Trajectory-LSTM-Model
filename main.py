@@ -1,39 +1,22 @@
 # -*- coding: utf-8 -*-
 import LSTMModel as utm_model
-import pandas as pd
+import DataProcessor as data_processor
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
-import numpy as np
 
 
-# 每四個點預測下一個點
-train_size, predict_size = 4, 1
+#取得所有csv檔
+all_csv_file = data_processor.get_all_csv_file_list(r'DroneFlightData/WithoutTakeoff')
 
-# 要用來訓練的資料欄位，只取特定欄位，總共10個
-data_column = ['lat', 'lon', 'x_gyro', 'y_gyro', 'z_gyro', 'x_acc', 'y_acc', 'z_acc', 'wind_speed', 'wind_direction']
+# 取得每一隻csv檔的train_windows資料的集合
+train_data, label = data_processor.get_all_train_data_and_label_data(all_csv_file)
 
-df = pd.read_csv( 'data/06242020_133209.csv' )
-dataset = df.loc[:, data_column].values
+print(train_data.shape)
 
-# 把資料都轉MinMax
-sc = MinMaxScaler( feature_range=(0, 1) )
-training_set_scaled = sc.fit_transform( dataset )
+# 切分訓練集, 測試集
+x_train, x_test, y_train, y_test = train_test_split(train_data, label, test_size=0.1, random_state=0)
 
+model = utm_model.get_train_odel( x_train, y_train )
 
-# 把csv檔的時間序資料切成每4筆預測下一筆，每四筆資料存在x, 而y就是label(每四筆的下一筆)
-x, y = utm_model.train_windows( training_set_scaled, train_size, predict_size )
-
-# 切train test data
-train_x, train_y, test_x, test_y = train_test_split( x, y, test_size=0.1, random_state=0 )
-
-
-# 要轉成3維才能丟入keras的LSTM中，但我train_x, train_y應該已經是三維了，但是這樣跑會出現
-# ValueError: Error when checking target: expected activation_1 to have 2 dimensions, but got array with shape (2, 4, 9)的錯誤
-
-print(train_x.shape)
-print(train_y.shape)
-
-
-model = utm_model.trainModel( train_x, train_y )
-loss, acc = model.evaluate( test_x, test_y, verbose=2 )
+model.fit( x_train, y_train, epochs=100, batch_size=50, verbose=1 )
+loss, acc = model.evaluate( x_test, y_test, verbose=2 )
 print('Loss : {}, Accuracy: {}'.format( loss, acc * 100 ))
