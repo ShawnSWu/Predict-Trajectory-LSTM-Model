@@ -1,5 +1,5 @@
 import keras as keras
-from keras.layers.core import Activation
+from keras.layers.core import Activation, Dropout
 from keras.layers import LSTM, Dense
 from keras.models import Sequential
 import keras.backend as K
@@ -16,7 +16,7 @@ def get_train_odel(train_X, train_Y):
     model.add( Dense(train_Y.shape[1]))
     model.add( Activation( "relu" ) )
 
-    opt = keras.optimizers.Adam( learning_rate=0.001 )
+    opt = keras.optimizers.Adam( learning_rate=0.0001 )
     model.compile( loss=regularization_mse_loss_function, optimizer=opt, metrics=[f1_score])
     model.summary()
     return model
@@ -36,7 +36,7 @@ def window_data(data, window_size):
 
 
 
-def regularization_mse_loss_function(y_true, y_pre, alpha=0.2):
+def regularization_mse_loss_function(y_true, y_pre, alpha=0.1):
     mse = keras.losses.mean_squared_error( y_true, y_pre )
     return mse + ( L2_loss(y_true, y_pre ) * alpha)
 
