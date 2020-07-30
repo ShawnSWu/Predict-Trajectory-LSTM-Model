@@ -8,15 +8,15 @@ import keras.backend as K
 def get_train_odel(train_X, train_Y):
     model = Sequential()
     model.add( LSTM(128, input_shape=(train_X.shape[1], train_X.shape[2]), return_sequences=True ))
-    # model.add( Dropout( 0.3 ) )
+    model.add( Dropout( 0.3 ) )
 
     model.add( LSTM(128, return_sequences=False ) )
-    # model.add( Dropout( 0.3 ) )
+    model.add( Dropout( 0.3 ) )
 
     model.add( Dense(train_Y.shape[1]))
     model.add( Activation( "relu" ) )
 
-    opt = keras.optimizers.Adam( learning_rate=0.0001 )
+    opt = keras.optimizers.Adam( learning_rate=0.001 )
     model.compile( loss=regularization_mse_loss_function, optimizer=opt, metrics=[f1_score])
     model.summary()
     return model

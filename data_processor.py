@@ -9,7 +9,7 @@ from sklearn.preprocessing import MinMaxScaler
 train_size, predict_size = 4, 1
 
 # 要用來訓練的資料欄位，只取特定欄位，總共10個
-data_column = ['lat', 'lon', 'x_gyro', 'y_gyro', 'z_gyro', 'x_acc', 'y_acc', 'z_acc', 'wind_speed', 'wind_direction']
+data_column = ['lat', 'lon', 'wind_speed', 'wind_direction'] # 'x_gyro', 'y_gyro', 'z_gyro', 'x_acc', 'y_acc', 'z_acc',
 
 path = r'DroneFlightData/WithoutTakeoff'
 
