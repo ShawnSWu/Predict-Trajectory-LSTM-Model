@@ -13,7 +13,9 @@ model = load_model('./uav_predict_modelF.h5', compile=False)
 def predict():
     if request.method == 'POST':
         model_input = request.get_json()
+        print(model_input)
         trajectory = model_input['model_input']
+        print(trajectory)
         np_trajectory = np.array(trajectory)
         normalization_coordinate = data_processor.get_scaler().fit_transform(np_trajectory)
 
@@ -27,11 +29,11 @@ def predict():
         lat = predict_coordinate[0][0]
         lon = predict_coordinate[0][1]
 
-        predict_coordinate = '{%s, %s}' % (str(lat), str(lon))
+        predict_coordinate = '{"predict_coordinate":[%s, %s]}' % (str(lon), str(lat))
         print(predict_coordinate)
     return predict_coordinate
 
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True, host='0.0.0.0')
