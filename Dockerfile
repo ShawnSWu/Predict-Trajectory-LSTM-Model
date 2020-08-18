@@ -1,10 +1,9 @@
-FROM ubuntu:16.04
+FROM python:3.7.2-stretch
 
-RUN apt-get update -y && \
-    apt-get install -y python-pip python-dev
+WORKDIR /app
+
+ADD . /app
 
 RUN pip install -r requirements.txt
 
-ENTRYPOINT [ "python" ]
-
-CMD [ "api.py" ]
+CMD python api.py
