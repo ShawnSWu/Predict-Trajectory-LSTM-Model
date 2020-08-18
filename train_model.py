@@ -2,6 +2,8 @@
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+import matplotlib.pyplot as plts
+import pandas as pd
 
 import predict_trajectory_model as utm_model
 import data_processor as data_processor
@@ -22,43 +24,50 @@ print(x_train.shape)
 
 model = utm_model.get_train_odel( x_train, y_train )
                                                                                 # 驗證集 split
-result = model.fit( x_train, y_train, epochs=1, batch_size=50, verbose=1, validation_split=0.1 )
-loss, f1_score = model.evaluate( x_test, y_test, verbose=2 )
+result = model.fit( x_train, y_train, epochs=800, batch_size=128, verbose=1, validation_split=0.1 )
+loss, mae = model.evaluate( x_test, y_test, verbose=2 )
 
-# coordinate_x_test = data_processor.get_scaler().inverse_transform(x_test[4])
-# print(coordinate_x_test)
-#
-# a = data_processor.get_scaler().inverse_transform(x_test[5])
-# print(a)
-#
-# b = data_processor.get_scaler().inverse_transform(x_test[6])
-# print(b)
-#
-# print("=======================")
-#
-#
-#
-# coordinate_y_test = data_processor.get_scaler().inverse_transform(y_test)
-# print(coordinate_y_test[4])
-# print(coordinate_y_test[5])
-# print(coordinate_y_test[6])
-#
-#
-# print("=======================")
-#
-#
-# predict_coordinate = model.predict(x_test)
-# predict_coordinate_inverse = data_processor.get_scaler().inverse_transform(predict_coordinate)
-#
-# print(predict_coordinate_inverse[4])
-# print(predict_coordinate_inverse[5])
-# print(predict_coordinate_inverse[6])
+print(data_processor.get_scaler().inverse_transform(x_test[4]))
+print(data_processor.get_scaler().inverse_transform(x_test[5]))
+print(data_processor.get_scaler().inverse_transform(x_test[6]))
+print(data_processor.get_scaler().inverse_transform(x_test[7]))
+print(data_processor.get_scaler().inverse_transform(x_test[8]))
+print(data_processor.get_scaler().inverse_transform(x_test[9]))
+print(data_processor.get_scaler().inverse_transform(x_test[10]))
+print("=====================================================================")
+
+coordinate_y_test = data_processor.get_scaler().inverse_transform(y_test)
+print(coordinate_y_test[4])
+print(coordinate_y_test[5])
+print(coordinate_y_test[6])
+print(coordinate_y_test[7])
+print(coordinate_y_test[8])
+print(coordinate_y_test[9])
+print(coordinate_y_test[10])
 
 
+print("=====================================================================")
 
-# model.save( "./uav_predict_model.h5" )
 
-print(loss, f1_score)
+predict_coordinate = model.predict(x_test)
+predict_coordinate_inverse = data_processor.get_scaler().inverse_transform(predict_coordinate)
+
+print(predict_coordinate_inverse[4])
+print(predict_coordinate_inverse[5])
+print(predict_coordinate_inverse[6])
+print(predict_coordinate_inverse[7])
+print(predict_coordinate_inverse[8])
+print(predict_coordinate_inverse[9])
+print(predict_coordinate_inverse[10])
+
+
+
+
+
+
+model.save( "./uav_predict_modelE.h5" )
+
+print(loss, mae)
 
 plt.plot( result.history['loss'] )
 plt.plot( result.history['val_loss'] )
@@ -67,3 +76,25 @@ plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'validation'], loc='upper left')
 plt.show()
+
+df_predict = pd.DataFrame(data=predict_coordinate_inverse)
+df_actual = pd.DataFrame(data=coordinate_y_test)
+
+start = 146
+end = 160
+
+predict_lat_list = df_predict.iloc[start:end, 0:1]
+predict_lon_list = df_predict.iloc[start:end, 1:2]
+
+actual_lat_list = df_actual.iloc[start:end, 0:1]
+actual_lon_list = df_actual.iloc[start:end, 1:2]
+
+
+plts.plot( predict_lat_list, predict_lon_list, 'ro')
+plts.plot( actual_lat_list, actual_lon_list, 'bo' )
+
+plts.title('Predict & Actual')
+plts.xlabel('latitude')
+plts.ylabel('longitude')
+plts.legend(['predict', 'actual'], loc='upper right')
+plts.show()
