@@ -4,14 +4,14 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 
-
-# 每四個點預測下一個點
+# Predict the next point every four points
 train_size, predict_size = 4, 1
 
-# 要用來訓練的資料欄位，只取特定欄位，總共10個
-data_column = ['lat', 'lon', 'wind_speed', 'wind_direction'] # 'x_gyro', 'y_gyro', 'z_gyro', 'x_acc', 'y_acc', 'z_acc',
+# The data fields to be used for training, only take specific fields, a total of 10
+data_column = ['lat', 'lon', 'wind_speed', 'wind_direction']  # 'x_gyro', 'y_gyro', 'z_gyro', 'x_acc', 'y_acc', 'z_acc',
 
 path = r'DroneFlightData/WithoutTakeoff'
+
 
 def window_data(data, window_size):
     X = []
@@ -25,17 +25,17 @@ def window_data(data, window_size):
     return X, y
 
 
-# 讀取資料夾底下所有csv檔，把檔名存在csv_file_list
+# Read all csv files under the folder, save the file name in csv_file_list
 def get_all_csv_file_list(path):
     csv_file_list = []
-    for root, dirs, files in os.walk(path):
+    for root, dirs, files in os.walk( path ):
         for f in files:
-            if os.path.splitext(f)[1] == '.csv':
-                csv_file_list.append(os.path.join(root, f))
+            if os.path.splitext( f )[1] == '.csv':
+                csv_file_list.append( os.path.join( root, f ) )
     return csv_file_list
 
 
-# 獲得所有train data, label
+# Get all train data, label
 def get_all_train_data_and_label_data(csv_file_list):
     global count
     all_train_data = []
@@ -44,22 +44,18 @@ def get_all_train_data_and_label_data(csv_file_list):
         df = pd.read_csv( csv_file )
         dataset = df.loc[:, data_column].values
         training_set_scaled = get_scaler().fit_transform( dataset )
-        if not np.isnan(training_set_scaled).any():
+        if not np.isnan( training_set_scaled ).any():
             x, y = window_data( training_set_scaled, train_size )
             for a in x:
-                all_train_data.append(a)
+                all_train_data.append( a )
             for b in y:
-                all_label.append(b)
+                all_label.append( b )
 
-    return np.array(all_train_data), np.array(all_label)
-
+    return np.array( all_train_data ), np.array( all_label )
 
 
 sc = MinMaxScaler( feature_range=(0, 1) )
+
+
 def get_scaler():
     return sc
-
-
-
-
-

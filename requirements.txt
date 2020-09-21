@@ -1,5 +1,8 @@
-flask
-keras
+flask==1.1.2
+keras==2.2.0
 numpy
 pandas
 sklearn
+requests
+geopy
+tensorflow==2.1.0
